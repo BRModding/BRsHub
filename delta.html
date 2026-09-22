@@ -104,7 +104,7 @@
             text-transform: uppercase;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            margin-top: auto; /* Pushes to bottom if content is short */
+            margin-top: auto;
         }
 
         .home-btn:hover {
@@ -139,49 +139,95 @@
 
     </div>
 
-    <a href="https://stripesvr.github.io/StripesHub" class="home-btn">Home</a>
+    <!-- UPDATED HOME BUTTON -->
+    <a href="https://brmodding.github.io/BRsHub/" class="home-btn">
+        Home
+    </a>
     
     <script>
         // --- EDIT YOUR TITLE HERE ---
-        // Change "Untitled" to whatever you want. You can add more phrases separated by commas.
         const textArray = ["Delta ADB"]; 
         
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
+
         const typeSpeed = 150;  
         const eraseSpeed = 100; 
         const delayBetween = 2500; 
-        const typewriterElement = document.getElementById("typewriter");
+
+        const typewriterElement =
+            document.getElementById("typewriter");
 
         function type() {
-            const currentText = textArray[textIndex];
+            const currentText =
+                textArray[textIndex];
             
             if (isDeleting) {
-                typewriterElement.textContent = currentText.substring(0, charIndex - 1);
+                typewriterElement.textContent =
+                    currentText.substring(
+                        0,
+                        charIndex - 1
+                    );
+
                 charIndex--;
+
             } else {
-                typewriterElement.textContent = currentText.substring(0, charIndex + 1);
+                typewriterElement.textContent =
+                    currentText.substring(
+                        0,
+                        charIndex + 1
+                    );
+
                 charIndex++;
             }
 
-            let nextActionSpeed = isDeleting ? eraseSpeed : typeSpeed;
+            let nextActionSpeed =
+                isDeleting
+                    ? eraseSpeed
+                    : typeSpeed;
 
-            if (!isDeleting && charIndex === currentText.length) {
-                nextActionSpeed = delayBetween; 
+            if (
+                !isDeleting &&
+                charIndex === currentText.length
+            ) {
+
+                nextActionSpeed =
+                    delayBetween;
+
                 isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
+
+            } else if (
+                isDeleting &&
+                charIndex === 0
+            ) {
+
                 isDeleting = false;
-                textIndex = (textIndex + 1) % textArray.length; // Moves to next text if you add more
-                nextActionSpeed = 500; 
+
+                textIndex =
+                    (textIndex + 1) %
+                    textArray.length;
+
+                nextActionSpeed = 500;
             }
 
-            setTimeout(type, nextActionSpeed);
+            setTimeout(
+                type,
+                nextActionSpeed
+            );
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(type, 500);
-        });
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                setTimeout(
+                    type,
+                    500
+                );
+
+            }
+        );
     </script>
 
 </body>
