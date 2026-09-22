@@ -1,7 +1,10 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber Modding</title>
+
     <style>
         /* --- GLOBAL STYLES --- */
         body {
@@ -14,7 +17,7 @@
             justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 60px 20px 80px 20px; /* Added extra bottom padding for the home button */
+            padding: 60px 20px 80px 20px;
             box-sizing: border-box;
             position: relative;
         }
@@ -32,8 +35,9 @@
             font-size: 2.5rem;
             font-weight: bold;
             color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.8), 
-                         0 0 20px rgba(255, 51, 51, 0.6);
+            text-shadow:
+                0 0 10px rgba(255, 51, 51, 0.8),
+                0 0 20px rgba(255, 51, 51, 0.6);
             letter-spacing: 2px;
             border-right: 3px solid #ff3333;
             white-space: nowrap;
@@ -43,8 +47,13 @@
         }
 
         @keyframes blink {
-            from, to { border-color: transparent }
-            50% { border-color: #ff3333; }
+            from, to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: #ff3333;
+            }
         }
 
         /* --- BUTTONS CONTAINER --- */
@@ -54,27 +63,40 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            margin-bottom: 40px; /* Space between links and home button */
+            margin-bottom: 40px;
         }
 
         /* --- EDITABLE BUTTON STYLES --- */
         .card-link {
-            background: linear-gradient(135deg, #16161f 0%, #1f1f2e 100%);
+            background: linear-gradient(
+                135deg,
+                #16161f 0%,
+                #1f1f2e 100%
+            );
+
             border: 1px solid #33334d;
             border-radius: 12px;
             padding: 15px 20px;
+
             text-decoration: none;
             color: #ffffff;
+
             display: flex;
             flex-direction: column;
+
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.3);
         }
 
         .card-link:hover {
             transform: translateY(-3px);
+
             border-color: #ff3333;
-            box-shadow: 0 6px 20px rgba(255, 51, 51, 0.2);
+
+            box-shadow:
+                0 6px 20px rgba(255, 51, 51, 0.2);
         }
 
         .btn-name {
@@ -95,25 +117,36 @@
             background: #16161f;
             border: 1px solid #33334d;
             border-radius: 20px;
+
             padding: 8px 16px;
+
             text-decoration: none;
             color: #b0b0bc;
+
             font-size: 0.85rem;
             font-weight: bold;
+
             letter-spacing: 1px;
             text-transform: uppercase;
+
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            margin-top: auto; /* Pushes to bottom if content is short */
+
+            box-shadow:
+                0 4px 6px rgba(0,0,0,0.2);
+
+            margin-top: auto;
         }
 
         .home-btn:hover {
             border-color: #ff3333;
             color: #ffffff;
-            box-shadow: 0 0 12px rgba(255, 51, 51, 0.3);
+
+            box-shadow:
+                0 0 12px rgba(255, 51, 51, 0.3);
         }
     </style>
 </head>
+
 <body>
 
     <div class="title-container">
@@ -122,56 +155,116 @@
 
     <div class="links-container">
 
-        <a href="CyberMenu.rar" download="" class="card-link">
-            <span class="btn-name">DISCONTINUED</span>
+        <a
+            href="CyberMenu.rar"
+            download
+            class="card-link">
+
+            <span class="btn-name">
+                DISCONTINUED
+            </span>
+
         </a>
 
     </div>
 
-    <a href="https://stripesvr.github.io/StripesHub" class="home-btn">Home</a>
+    <!-- UPDATED HOME BUTTON -->
+    <a
+        href="https://brmodding.github.io/BRsHub/"
+        class="home-btn">
+
+        Home
+
+    </a>
 
     <script>
+
         // --- EDIT YOUR TITLE HERE ---
-        const textArray = ["Cyber Modding"]; 
-        
+        const textArray = ["Cyber Modding"];
+
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
-        const typeSpeed = 150;  
-        const eraseSpeed = 100; 
-        const delayBetween = 2500; 
-        const typewriterElement = document.getElementById("typewriter");
+
+        const typeSpeed = 150;
+        const eraseSpeed = 100;
+        const delayBetween = 2500;
+
+        const typewriterElement =
+            document.getElementById("typewriter");
 
         function type() {
-            const currentText = textArray[textIndex];
-            
+
+            const currentText =
+                textArray[textIndex];
+
             if (isDeleting) {
-                typewriterElement.textContent = currentText.substring(0, charIndex - 1);
+
+                typewriterElement.textContent =
+                    currentText.substring(
+                        0,
+                        charIndex - 1
+                    );
+
                 charIndex--;
+
             } else {
-                typewriterElement.textContent = currentText.substring(0, charIndex + 1);
+
+                typewriterElement.textContent =
+                    currentText.substring(
+                        0,
+                        charIndex + 1
+                    );
+
                 charIndex++;
             }
 
-            let nextActionSpeed = isDeleting ? eraseSpeed : typeSpeed;
+            let nextActionSpeed =
+                isDeleting
+                    ? eraseSpeed
+                    : typeSpeed;
 
-            if (!isDeleting && charIndex === currentText.length) {
-                nextActionSpeed = delayBetween; 
+            if (
+                !isDeleting &&
+                charIndex === currentText.length
+            ) {
+
+                nextActionSpeed = delayBetween;
                 isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
+
+            } else if (
+                isDeleting &&
+                charIndex === 0
+            ) {
+
                 isDeleting = false;
-                textIndex = (textIndex + 1) % textArray.length; 
-                nextActionSpeed = 500; 
+
+                textIndex =
+                    (textIndex + 1) %
+                    textArray.length;
+
+                nextActionSpeed = 500;
             }
 
-            setTimeout(type, nextActionSpeed);
+            setTimeout(
+                type,
+                nextActionSpeed
+            );
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(type, 500);
-        });
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                setTimeout(
+                    type,
+                    500
+                );
+
+            }
+        );
+
     </script>
 
-
-
-</body></html>
+</body>
+</html>
