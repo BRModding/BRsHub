@@ -9,9 +9,9 @@
 <style>
 :root {
     --cyan: #00ffff;
-    --cyan-dark: #00aeb5;
-    --bg: #001416;
-    --card: #061e22;
+    --cyan-light: #39ffff;
+    --cyan-dark: #007f86;
+    --text: #ffffff;
     --glow: 0px;
 }
 
@@ -19,27 +19,59 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+html,
+body {
+    margin: 0;
+    min-height: 100%;
 }
 
 body {
-    margin: 0;
     min-height: 100vh;
     padding: 40px 20px;
     overflow-x: hidden;
 
+    /*
+       FULL CYAN BACKGROUND
+    */
+    background:
+        linear-gradient(
+            135deg,
+            #00ffff 0%,
+            #00e5e5 25%,
+            #00caca 50%,
+            #00e5e5 75%,
+            #00ffff 100%
+        );
+
+    color: var(--text);
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Geneva,
+        Verdana,
+        sans-serif;
+}
+
+/* Cyan animated background glow */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
     background:
         radial-gradient(
-            circle at center,
-            rgba(0, 255, 255, 0.28) 0%,
-            rgba(0, 150, 160, 0.12) 35%,
-            transparent 75%
+            circle at 20% 20%,
+            rgba(255,255,255,0.45),
+            transparent 30%
         ),
-        linear-gradient(135deg, #001014, #00282d, #001416);
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(255,255,255,0.25),
+            transparent 35%
+        );
 
-    color: #ffffff;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* =========================
@@ -49,10 +81,12 @@ body {
 #lightning-canvas {
     position: fixed;
     inset: 0;
+
     width: 100vw;
     height: 100vh;
+
     pointer-events: none;
-    z-index: 1;
+    z-index: 5;
 }
 
 /* =========================
@@ -61,18 +95,19 @@ body {
 
 .main-content {
     width: 100%;
+
     display: flex;
     flex-direction: column;
     align-items: center;
 
     position: relative;
-    z-index: 2;
+    z-index: 10;
 
     filter: blur(20px);
     opacity: 0;
 
     transition:
-        filter 1s cubic-bezier(0.25, 1, 0.5, 1),
+        filter 1s ease,
         opacity 1s ease;
 }
 
@@ -90,17 +125,19 @@ body {
     inset: 0;
 
     background:
-        radial-gradient(
-            circle,
-            rgba(0, 255, 255, 0.16),
-            rgba(0, 10, 13, 0.97)
+        linear-gradient(
+            135deg,
+            #00ffff,
+            #00bfc6,
+            #00ffff
         );
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     z-index: 9999;
+
     cursor: pointer;
 
     transition:
@@ -114,28 +151,33 @@ body {
 }
 
 .enter-text {
-    color: white;
+    color: #ffffff;
+
     font-size: 2rem;
-    font-weight: 800;
+    font-weight: 900;
+
     letter-spacing: 4px;
+
     text-transform: uppercase;
 
     text-shadow:
-        0 0 10px var(--cyan),
-        0 0 25px var(--cyan),
-        0 0 50px rgba(0, 255, 255, 0.7);
+        0 0 10px #008b91,
+        0 0 25px #006b70,
+        0 0 50px rgba(0,0,0,0.35);
 
     animation: pulseText 2s infinite ease-in-out;
 }
 
 @keyframes pulseText {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
-        opacity: 0.75;
+        opacity: 0.8;
     }
 
     50% {
-        transform: scale(1.06);
+        transform: scale(1.07);
         opacity: 1;
     }
 }
@@ -150,20 +192,24 @@ body {
 
     object-fit: cover;
 
-    border: 5px solid var(--cyan);
+    border: 6px solid #ffffff;
+
     border-radius: 50%;
 
     box-shadow:
-        0 0 calc(20px + var(--glow)) var(--cyan),
-        0 0 calc(45px + var(--glow)) rgba(0, 255, 255, 0.35);
+        0 0 calc(20px + var(--glow)) #ffffff,
+        0 0 calc(45px + var(--glow)) #00ffff;
 
     margin-bottom: 20px;
 
-    transition: transform 0.3s ease;
+    transition:
+        transform 0.3s ease;
 }
 
 .profile-pic:hover {
-    transform: scale(1.05) rotate(2deg);
+    transform:
+        scale(1.06)
+        rotate(2deg);
 }
 
 /* =========================
@@ -182,37 +228,43 @@ body {
 
 .typewriter-text {
     font-size: 2.5rem;
-    font-weight: 800;
 
-    color: white;
+    font-weight: 900;
+
+    color: #ffffff;
 
     letter-spacing: 2px;
 
     text-shadow:
-        0 0 calc(15px + var(--glow)) var(--cyan),
-        0 0 calc(35px + var(--glow)) rgba(0, 255, 255, 0.7);
+        0 0 10px #007b80,
+        0 0 25px #00656a,
+        0 0 40px rgba(255,255,255,0.7);
 
-    border-right: 3px solid var(--cyan);
+    border-right:
+        3px solid #ffffff;
 
     white-space: nowrap;
 
     padding-right: 5px;
 
-    animation: blink 0.75s step-end infinite;
+    animation:
+        blink 0.75s step-end infinite;
 }
 
 @keyframes blink {
-    from, to {
+
+    from,
+    to {
         border-color: transparent;
     }
 
     50% {
-        border-color: var(--cyan);
+        border-color: #ffffff;
     }
 }
 
 /* =========================
-   BUTTON CONTAINER
+   BUTTON AREA
 ========================= */
 
 .links-container {
@@ -228,7 +280,7 @@ body {
 }
 
 /* =========================
-   MOD BUTTONS
+   CYAN BUTTONS
 ========================= */
 
 .card-link {
@@ -237,18 +289,20 @@ body {
     background:
         linear-gradient(
             135deg,
-            rgba(0, 255, 255, 0.12),
-            rgba(0, 40, 45, 0.9)
+            #00ffff,
+            #00b8c0
         );
 
-    border: 1px solid rgba(0, 255, 255, 0.45);
+    border:
+        3px solid #ffffff;
 
-    border-radius: 14px;
+    border-radius: 15px;
 
     padding: 17px 20px;
 
     text-decoration: none;
-    color: white;
+
+    color: #ffffff;
 
     display: flex;
     flex-direction: column;
@@ -256,95 +310,69 @@ body {
     overflow: hidden;
 
     box-shadow:
-        0 5px 20px rgba(0, 0, 0, 0.35),
-        0 0 0 rgba(0, 255, 255, 0);
+        0 6px 20px rgba(0, 70, 75, 0.45),
+        inset 0 0 15px rgba(255,255,255,0.2);
 
     transition:
         transform 0.2s ease,
-        border-color 0.2s ease,
         box-shadow 0.2s ease,
-        background 0.2s ease;
-}
-
-.card-link::before {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    left: -100%;
-
-    width: 100%;
-    height: 100%;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(0, 255, 255, 0.18),
-            transparent
-        );
-
-    transition: left 0.5s ease;
-}
-
-.card-link:hover::before {
-    left: 100%;
+        filter 0.2s ease;
 }
 
 .card-link:hover {
-    transform: translateY(-5px) scale(1.01);
+    transform:
+        translateY(-5px)
+        scale(1.02);
 
-    border-color: var(--cyan);
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(0, 255, 255, 0.2),
-            rgba(0, 50, 55, 0.95)
-        );
+    filter: brightness(1.1);
 
     box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.45),
-        0 0 25px rgba(0, 255, 255, 0.4);
+        0 10px 35px rgba(0, 60, 65, 0.6),
+        0 0 30px rgba(255,255,255,0.65);
+}
+
+.card-link:active {
+    transform: scale(0.98);
 }
 
 .btn-name {
-    position: relative;
+    font-size: 1.3rem;
 
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-weight: 900;
 
-    color: var(--cyan);
+    color: #ffffff;
 
     margin-bottom: 5px;
 
     text-shadow:
-        0 0 8px rgba(0, 255, 255, 0.5);
+        0 2px 5px rgba(0,70,75,0.7);
 }
 
 .btn-description {
-    position: relative;
-
     font-size: 0.9rem;
 
-    color: #b9e9eb;
+    color: #eaffff;
 
     line-height: 1.4;
+
+    text-shadow:
+        0 1px 3px rgba(0,70,75,0.6);
 }
 
 /* =========================
-   SUBSCRIPTION LOCK
+   SUBSCRIPTION BOX
 ========================= */
 
 .sub-locker {
     background:
         linear-gradient(
             135deg,
-            rgba(0, 255, 255, 0.1),
-            rgba(0, 30, 35, 0.95)
+            #00ffff,
+            #00b7bf
         );
 
-    border: 2px solid var(--cyan);
+    border:
+        4px solid #ffffff;
 
     border-radius: 18px;
 
@@ -353,10 +381,11 @@ body {
     text-align: center;
 
     box-shadow:
-        0 0 25px rgba(0, 255, 255, 0.25),
-        inset 0 0 25px rgba(0, 255, 255, 0.05);
+        0 8px 35px rgba(0,60,65,0.5),
+        0 0 35px rgba(255,255,255,0.4);
 
     max-width: 440px;
+
     width: 100%;
 
     margin-bottom: 40px;
@@ -365,21 +394,20 @@ body {
 }
 
 .sub-locker h3 {
-    color: white;
+    color: #ffffff;
 
     margin-top: 0;
 
-    font-size: 1.6rem;
+    font-size: 1.7rem;
 
     letter-spacing: 2px;
 
     text-shadow:
-        0 0 10px var(--cyan),
-        0 0 20px rgba(0, 255, 255, 0.5);
+        0 2px 8px rgba(0,70,75,0.7);
 }
 
 .sub-locker p {
-    color: #b9e9eb;
+    color: #efffff;
 
     font-size: 0.95rem;
 
@@ -389,18 +417,13 @@ body {
 }
 
 /* =========================
-   CYAN SUB BUTTONS
+   SUBSCRIBE BUTTON
 ========================= */
 
 .locker-btn {
-    background:
-        linear-gradient(
-            135deg,
-            #00ffff,
-            #00bfc8
-        );
+    background: #ffffff;
 
-    color: #001316;
+    color: #00878d;
 
     border: none;
 
@@ -410,7 +433,7 @@ body {
 
     font-size: 1rem;
 
-    border-radius: 9px;
+    border-radius: 10px;
 
     cursor: pointer;
 
@@ -418,55 +441,54 @@ body {
 
     display: block;
 
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
-
     margin-bottom: 15px;
 
     width: 100%;
 
     box-shadow:
-        0 5px 20px rgba(0, 255, 255, 0.25);
+        0 5px 20px rgba(0,60,65,0.3);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .locker-btn:hover {
-    transform: translateY(-2px);
-
-    filter: brightness(1.1);
+    transform: translateY(-3px);
 
     box-shadow:
-        0 7px 30px rgba(0, 255, 255, 0.5);
+        0 8px 30px rgba(0,60,65,0.45);
 }
 
 .locker-btn.verify-btn {
-    background: rgba(0, 255, 255, 0.08);
+    background:
+        rgba(255,255,255,0.2);
 
-    border: 1px solid rgba(0, 255, 255, 0.4);
+    border:
+        2px solid #ffffff;
 
-    color: var(--cyan);
+    color: #ffffff;
 
     box-shadow: none;
 }
 
 .locker-btn.verify-btn:hover {
-    background: rgba(0, 255, 255, 0.15);
-
-    border-color: var(--cyan);
+    background:
+        rgba(255,255,255,0.3);
 }
 
 .error-msg {
-    color: #ff5555;
+    color: #ff2222;
 
     font-size: 0.85rem;
 
     margin-top: -5px;
+
     margin-bottom: 15px;
 
     display: none;
 
-    font-weight: 600;
+    font-weight: 800;
 }
 
 /* =========================
@@ -476,7 +498,8 @@ body {
 @media (max-width: 600px) {
 
     body {
-        padding: 30px 15px;
+        padding:
+            30px 15px;
     }
 
     .profile-pic {
@@ -489,12 +512,8 @@ body {
     }
 
     .enter-text {
-        font-size: 1.35rem;
+        font-size: 1.3rem;
         text-align: center;
-    }
-
-    .links-container {
-        max-width: 100%;
     }
 
     .sub-locker {
@@ -508,36 +527,60 @@ body {
 
 <canvas id="lightning-canvas"></canvas>
 
-<audio id="bg-audio" crossorigin="anonymous"></audio>
+<audio
+    id="bg-audio"
+    crossorigin="anonymous">
+</audio>
 
 <!-- ENTER SCREEN -->
-<div class="enter-overlay" id="overlay-screen">
-    <div class="enter-text" id="enter-status">
+
+<div
+    class="enter-overlay"
+    id="overlay-screen">
+
+    <div
+        class="enter-text"
+        id="enter-status">
+
         Click to Enter...
+
     </div>
+
 </div>
 
-<!-- MAIN SITE -->
-<div class="main-content" id="site-content">
+<!-- MAIN WEBSITE -->
+
+<div
+    class="main-content"
+    id="site-content">
 
     <img
         src="151.png"
         alt="BR Profile Picture"
-        class="profile-pic"
-    >
+        class="profile-pic">
 
     <div class="title-container">
-        <div class="typewriter-text" id="typewriter"></div>
+
+        <div
+            class="typewriter-text"
+            id="typewriter">
+        </div>
+
     </div>
 
-    <!-- SUBSCRIPTION LOCK -->
-    <div class="sub-locker" id="subscription-modal">
+    <!-- SUBSCRIPTION REQUIRED -->
 
-        <h3>SUBSCRIBE REQUIRED</h3>
+    <div
+        class="sub-locker"
+        id="subscription-modal">
+
+        <h3>
+            SUBSCRIBE REQUIRED
+        </h3>
 
         <p>
-            Please subscribe to my YouTube channel before
-            continuing to BRModding.
+            Please subscribe to my YouTube channel
+            before continuing to BRModding.
         </p>
 
         <a
@@ -545,112 +588,176 @@ body {
             target="_blank"
             rel="noopener noreferrer"
             class="locker-btn"
-            id="subscribe-action-btn"
-        >
+            id="subscribe-action-btn">
+
             1. Subscribe on YouTube
+
         </a>
 
-        <div class="error-msg" id="locker-error">
+        <div
+            class="error-msg"
+            id="locker-error">
+
             Please complete step 1 before checking status!
+
         </div>
 
         <button
             class="locker-btn verify-btn"
-            id="verify-action-btn"
-        >
+            id="verify-action-btn">
+
             2. Check Verification
+
         </button>
 
     </div>
 
-    <!-- MOD LINKS -->
-    <div class="links-container" id="menu-links">
+    <!-- MOD BUTTONS -->
 
-        <a href="frida.html" class="card-link">
-            <span class="btn-name">Frida Tools</span>
+    <div
+        class="links-container"
+        id="menu-links">
+
+        <a
+            href="frida.html"
+            class="card-link">
+
+            <span class="btn-name">
+                Frida Tools
+            </span>
+
             <span class="btn-description">
                 Needed For Every Mod In Here!
             </span>
+
         </a>
 
-        <a href="https://discord.gg/XnFxrkuKM5"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="card-link">
+        <a
+            href="https://discord.gg/XnFxrkuKM5"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card-link">
 
-            <span class="btn-name">EIC Modding</span>
+            <span class="btn-name">
+                EIC Modding
+            </span>
 
             <span class="btn-description">
                 Standalone no PC Animal Company mod
             </span>
+
         </a>
 
-        <a href="stripesadb.html" class="card-link">
-            <span class="btn-name">StripesADB</span>
+        <a
+            href="stripesadb.html"
+            class="card-link">
+
+            <span class="btn-name">
+                StripesADB
+            </span>
+
             <span class="btn-description">
                 All The Downloads Needed For StripesADB
             </span>
+
         </a>
 
-        <a href="standy.html" class="card-link">
-            <span class="btn-name">Standy Mod</span>
-            <span class="btn-description">
-                Download N Stuff For Standy Mod — Works For Every Game!
+        <a
+            href="standy.html"
+            class="card-link">
+
+            <span class="btn-name">
+                Standy Mod
             </span>
+
+            <span class="btn-description">
+                Download N Stuff For Standy Mod Works For Every Game!
+            </span>
+
         </a>
 
-        <a href="iistupid.html" class="card-link">
-            <span class="btn-name">II Stupid Menu Standalone</span>
+        <a
+            href="iistupid.html"
+            class="card-link">
+
+            <span class="btn-name">
+                II Stupid Menu Standalone
+            </span>
+
             <span class="btn-description">
                 Coming Soon
             </span>
+
         </a>
 
-        <a href="https://discord.gg/spm"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="card-link">
+        <a
+            href="https://discord.gg/spm"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card-link">
 
-            <span class="btn-name">SPM Gorilla Tag Mods</span>
+            <span class="btn-name">
+                SPM Gorilla Tag Mods
+            </span>
 
             <span class="btn-description">
                 Mod Menu No PC
             </span>
+
         </a>
 
-        <a href="https://github.com/stripesvr/StripesHub/releases/tag/mods"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="card-link">
+        <a
+            href="https://github.com/stripesvr/StripesHub/releases/tag/mods"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card-link">
 
-            <span class="btn-name">Fangame Modder</span>
+            <span class="btn-name">
+                Fangame Modder
+            </span>
 
             <span class="btn-description">
-                Mods for fangames
+                ye, mods fangames
             </span>
+
         </a>
 
-        <a href="delta.html" class="card-link">
-            <span class="btn-name">Delta</span>
+        <a
+            href="delta.html"
+            class="card-link">
+
+            <span class="btn-name">
+                Delta
+            </span>
+
             <span class="btn-description">
                 Delta New ADB
             </span>
+
         </a>
 
-        <a href="moonlitv2.html" class="card-link">
-            <span class="btn-name">MoonlitV2</span>
+        <a
+            href="moonlitv2.html"
+            class="card-link">
+
+            <span class="btn-name">
+                MoonlitV2
+            </span>
+
             <span class="btn-description">
                 The BEST Moonlit
             </span>
+
         </a>
 
     </div>
+
 </div>
 
 <script>
 
 /* =========================
-   CONFIG
+   SETTINGS
 ========================= */
 
 const DEFAULT_VOLUME = 0.05;
@@ -675,28 +782,39 @@ const typewriterElement =
 
 function type() {
 
-    const currentText = textArray[textIndex];
+    const currentText =
+        textArray[textIndex];
 
     if (isDeleting) {
 
         typewriterElement.textContent =
-            currentText.substring(0, charIndex - 1);
+            currentText.substring(
+                0,
+                charIndex - 1
+            );
 
         charIndex--;
 
     } else {
 
         typewriterElement.textContent =
-            currentText.substring(0, charIndex + 1);
+            currentText.substring(
+                0,
+                charIndex + 1
+            );
 
         charIndex++;
     }
 
     let speed =
-        isDeleting ? eraseSpeed : typeSpeed;
+        isDeleting
+            ? eraseSpeed
+            : typeSpeed;
 
-    if (!isDeleting &&
-        charIndex === currentText.length) {
+    if (
+        !isDeleting &&
+        charIndex === currentText.length
+    ) {
 
         speed = delayBetween;
         isDeleting = true;
@@ -718,14 +836,20 @@ function type() {
 ========================= */
 
 const canvas =
-    document.getElementById("lightning-canvas");
+    document.getElementById(
+        "lightning-canvas"
+    );
 
-const ctx = canvas.getContext("2d");
+const ctx =
+    canvas.getContext("2d");
 
 function resizeCanvas() {
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
 }
 
 window.addEventListener(
@@ -793,7 +917,7 @@ function drawLightning(
     ctx.lineWidth = width;
 
     ctx.shadowBlur = glowSize;
-    ctx.shadowColor = "#ff2222";
+    ctx.shadowColor = "#ff0000";
 
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -825,7 +949,9 @@ function triggerLightningStrike() {
     activeStrikes = [];
 
     const totalStrikes =
-        Math.floor(Math.random() * 3) + 2;
+        Math.floor(
+            Math.random() * 3
+        ) + 2;
 
     for (
         let i = 0;
@@ -834,17 +960,17 @@ function triggerLightningStrike() {
     ) {
 
         const startX =
-            Math.random() * canvas.width;
+            Math.random() *
+            canvas.width;
 
-        const path =
+        activeStrikes.push(
             createLightningPath(
                 startX,
                 0,
                 canvas.height,
                 10
-            );
-
-        activeStrikes.push(path);
+            )
+        );
     }
 
     lightningOpacity = 1;
@@ -862,7 +988,9 @@ let sourceNode;
 let isPlaying = false;
 
 const audio =
-    document.getElementById("bg-audio");
+    document.getElementById(
+        "bg-audio"
+    );
 
 let bassHistory = [];
 
@@ -875,9 +1003,9 @@ function setupAndPlayAudio() {
     try {
 
         audio.src = SONG_URL;
-
         audio.loop = true;
-        audio.volume = DEFAULT_VOLUME;
+        audio.volume =
+            DEFAULT_VOLUME;
 
         const AudioContextClass =
             window.AudioContext ||
@@ -901,7 +1029,9 @@ function setupAndPlayAudio() {
                 audio
             );
 
-        sourceNode.connect(analyser);
+        sourceNode.connect(
+            analyser
+        );
 
         analyser.connect(
             audioCtx.destination
@@ -922,7 +1052,7 @@ function setupAndPlayAudio() {
             .catch(error => {
 
                 console.error(
-                    "Audio playback failed:",
+                    "Audio failed:",
                     error
                 );
             });
@@ -930,14 +1060,14 @@ function setupAndPlayAudio() {
     } catch (error) {
 
         console.error(
-            "Audio initialization failed:",
+            "Audio setup failed:",
             error
         );
     }
 }
 
 /* =========================
-   AUDIO VISUALIZER
+   VISUALIZER
 ========================= */
 
 function animateDance() {
@@ -969,21 +1099,20 @@ function animateDance() {
 
     let sum = 0;
 
-    for (
-        let i = 0;
-        i < bassHistory.length;
-        i++
-    ) {
-
-        sum += bassHistory[i];
-    }
+    bassHistory.forEach(
+        value => {
+            sum += value;
+        }
+    );
 
     const bassAverage =
         bassHistory.length
             ? sum / bassHistory.length
             : 120;
 
-    bassHistory.push(bassValue);
+    bassHistory.push(
+        bassValue
+    );
 
     if (
         bassHistory.length >
@@ -993,29 +1122,24 @@ function animateDance() {
         bassHistory.shift();
     }
 
-    const currentTime =
-        Date.now();
-
-    const timeSinceLastStrike =
-        currentTime - lastStrikeTime;
+    const now = Date.now();
 
     if (
         (
             bassValue >
             bassAverage * 1.04 &&
-            timeSinceLastStrike > 180
+            now - lastStrikeTime > 180
         )
         ||
         (
             bassValue >= 240 &&
-            timeSinceLastStrike > 320
+            now - lastStrikeTime > 320
         )
     ) {
 
         triggerLightningStrike();
 
-        lastStrikeTime =
-            currentTime;
+        lastStrikeTime = now;
     }
 
     if (lightningOpacity > 0) {
@@ -1023,22 +1147,24 @@ function animateDance() {
         ctx.globalAlpha =
             lightningOpacity;
 
-        activeStrikes.forEach(path => {
+        activeStrikes.forEach(
+            path => {
 
-            drawLightning(
-                path,
-                5,
-                35,
-                "#ff2222"
-            );
+                drawLightning(
+                    path,
+                    5,
+                    35,
+                    "#ff2222"
+                );
 
-            drawLightning(
-                path,
-                1.5,
-                5,
-                "#ffffff"
-            );
-        });
+                drawLightning(
+                    path,
+                    1.5,
+                    5,
+                    "#ffffff"
+                );
+            }
+        );
 
         lightningOpacity *= 0.75;
 
@@ -1052,21 +1178,19 @@ function animateDance() {
 
     ctx.globalAlpha = 1;
 
-    const normalized =
-        bassValue / 255;
+    const glow =
+        (bassValue / 255) * 50;
 
-    const glowIntensity =
-        normalized * 50;
-
-    document.documentElement.style
+    document.documentElement
+        .style
         .setProperty(
             "--glow",
-            `${glowIntensity}px`
+            `${glow}px`
         );
 }
 
 /* =========================
-   SUBSCRIPTION LOCK
+   SUBSCRIPTION SYSTEM
 ========================= */
 
 let clickedSubscribe = false;
@@ -1098,12 +1222,12 @@ function checkLayoutLock() {
             "locker-error"
         );
 
-    const hasVisitedBefore =
+    const visited =
         localStorage.getItem(
             "brmodding_visited"
         );
 
-    if (!hasVisitedBefore) {
+    if (!visited) {
 
         container.style.display =
             "none";
@@ -1152,7 +1276,7 @@ function checkLayoutLock() {
 }
 
 /* =========================
-   ENTER SCREEN
+   ENTER
 ========================= */
 
 const overlay =
