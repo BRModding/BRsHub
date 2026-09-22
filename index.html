@@ -1,566 +1,1212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BR's Modding Website </title>
-    <style>
-        :root {
-            --beat-glow: 0px;
-            --beat-color-pulse: #0d0d11;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-            background-color: var(--beat-color-pulse);
-            background-image: radial-gradient(circle at center, rgba(225, 30, 50, 0.15) 0%, transparent 80%);
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            position: relative;
-        }
+<title>BR's Modding Website</title>
 
-        canvas#lightning-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 1;
-        }
+<style>
+:root {
+    --cyan: #00ffff;
+    --cyan-dark: #00aeb5;
+    --bg: #001416;
+    --card: #061e22;
+    --glow: 0px;
+}
 
-        .main-content {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            filter: blur(20px);
-            transition: filter 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            pointer-events: none;
-            position: relative;
-            z-index: 2;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .main-content.active {
-            filter: blur(0px);
-            pointer-events: auto;
-        }
+html {
+    scroll-behavior: smooth;
+}
 
-        .enter-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(13, 13, 17, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 40px 20px;
+    overflow-x: hidden;
 
-        .enter-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0, 255, 255, 0.28) 0%,
+            rgba(0, 150, 160, 0.12) 35%,
+            transparent 75%
+        ),
+        linear-gradient(135deg, #001014, #00282d, #001416);
 
-        .enter-text {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffffff;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255, 51, 51, 0.9), 
-                         0 0 30px rgba(255, 51, 51, 0.5);
-            animation: pulseText 2s infinite ease-in-out;
-        }
+    color: #ffffff;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        @keyframes pulseText {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-        }
+/* =========================
+   LIGHTNING
+========================= */
 
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border: 5px solid #ff1111;
-            box-shadow: 0 0 calc(20px + var(--beat-glow)) rgba(255, 10, 10, 0.6);
-            margin-bottom: 20px;
-            border-radius: 50%;
-        }
+#lightning-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
 
-        .title-container {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
+/* =========================
+   MAIN CONTENT
+========================= */
 
-        .typewriter-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 calc(15px + var(--beat-glow)) rgba(255, 10, 10, 0.8), 
-                         0 0 calc(30px + var(--beat-glow)) rgba(255, 0, 0, 0.5);
-            letter-spacing: 2px;
-            border-right: 3px solid #ff1111;
-            white-space: nowrap;
-            background: transparent;
-            padding-right: 4px;
-            animation: blink 0.75s step-end infinite;
-        }
+.main-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-        @keyframes blink {
-            from, to { border-color: transparent }
-            50% { border-color: #ff1111; }
-        }
+    position: relative;
+    z-index: 2;
 
-        .links-container {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+    filter: blur(20px);
+    opacity: 0;
 
-        .card-link {
-            background: linear-gradient(135deg, #16161f 0%, #1f1f2e 100%);
-            border: 1px solid #33334d;
-            border-radius: 12px;
-            padding: 15px 20px;
-            text-decoration: none;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.1s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
+    transition:
+        filter 1s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 1s ease;
+}
 
-        .card-link:hover {
-            transform: translateY(-3px);
-            border-color: #ff1111;
-            box-shadow: 0 6px 25px rgba(255, 10, 10, 0.5);
-        }
+.main-content.active {
+    filter: blur(0);
+    opacity: 1;
+}
 
-        .btn-name {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #ff3333;
-            margin-bottom: 5px;
-        }
+/* =========================
+   ENTER SCREEN
+========================= */
 
-        .btn-description {
-            font-size: 0.9rem;
-            color: #b0b0bc;
-            line-height: 1.4;
-        }
+.enter-overlay {
+    position: fixed;
+    inset: 0;
 
-        /* Subscription Required Block Module */
-        .sub-locker {
-            background: linear-gradient(135deg, #121218 0%, #171724 100%);
-            border: 2px solid #ff1111;
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 0 35px rgba(255, 17, 17, 0.35);
-            max-width: 440px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 40px;
-            display: none;
-        }
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 255, 255, 0.16),
+            rgba(0, 10, 13, 0.97)
+        );
 
-        .sub-locker h3 {
-            color: #ffffff;
-            margin-top: 0;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(255, 17, 17, 0.6);
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-        .sub-locker p {
-            color: #b0b0bc;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
+    z-index: 9999;
+    cursor: pointer;
 
-        .locker-btn {
-            background: #ff1111;
-            color: #ffffff;
-            border: none;
-            padding: 14px 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-            transition: all 0.2s ease;
-            margin-bottom: 15px;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 4px 15px rgba(255, 17, 17, 0.2);
-        }
+    transition:
+        opacity 0.8s ease,
+        visibility 0.8s ease;
+}
 
-        .locker-btn:hover {
-            background: #e60000;
-            transform: translateY(-1px);
-        }
+.enter-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
 
-        .locker-btn.verify-btn {
-            background: #20202c;
-            border: 1px solid #3d3d5c;
-            color: #e0e0eb;
-            box-shadow: none;
-        }
+.enter-text {
+    color: white;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
 
-        .locker-btn.verify-btn:hover {
-            background: #272736;
-            border-color: #ff1111;
-        }
+    text-shadow:
+        0 0 10px var(--cyan),
+        0 0 25px var(--cyan),
+        0 0 50px rgba(0, 255, 255, 0.7);
 
-        .error-msg {
-            color: #ff3333;
-            font-size: 0.85rem;
-            margin-top: -5px;
-            margin-bottom: 15px;
-            display: none;
-            font-weight: 500;
-        }
-    </style>
+    animation: pulseText 2s infinite ease-in-out;
+}
+
+@keyframes pulseText {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.75;
+    }
+
+    50% {
+        transform: scale(1.06);
+        opacity: 1;
+    }
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+
+    object-fit: cover;
+
+    border: 5px solid var(--cyan);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 calc(20px + var(--glow)) var(--cyan),
+        0 0 calc(45px + var(--glow)) rgba(0, 255, 255, 0.35);
+
+    margin-bottom: 20px;
+
+    transition: transform 0.3s ease;
+}
+
+.profile-pic:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.title-container {
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 40px;
+}
+
+.typewriter-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+
+    color: white;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 calc(15px + var(--glow)) var(--cyan),
+        0 0 calc(35px + var(--glow)) rgba(0, 255, 255, 0.7);
+
+    border-right: 3px solid var(--cyan);
+
+    white-space: nowrap;
+
+    padding-right: 5px;
+
+    animation: blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+    from, to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: var(--cyan);
+    }
+}
+
+/* =========================
+   BUTTON CONTAINER
+========================= */
+
+.links-container {
+    width: 100%;
+    max-width: 520px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    margin-bottom: 40px;
+}
+
+/* =========================
+   MOD BUTTONS
+========================= */
+
+.card-link {
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0, 255, 255, 0.12),
+            rgba(0, 40, 45, 0.9)
+        );
+
+    border: 1px solid rgba(0, 255, 255, 0.45);
+
+    border-radius: 14px;
+
+    padding: 17px 20px;
+
+    text-decoration: none;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.35),
+        0 0 0 rgba(0, 255, 255, 0);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.card-link::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0, 255, 255, 0.18),
+            transparent
+        );
+
+    transition: left 0.5s ease;
+}
+
+.card-link:hover::before {
+    left: 100%;
+}
+
+.card-link:hover {
+    transform: translateY(-5px) scale(1.01);
+
+    border-color: var(--cyan);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0, 255, 255, 0.2),
+            rgba(0, 50, 55, 0.95)
+        );
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.45),
+        0 0 25px rgba(0, 255, 255, 0.4);
+}
+
+.btn-name {
+    position: relative;
+
+    font-size: 1.25rem;
+    font-weight: 800;
+
+    color: var(--cyan);
+
+    margin-bottom: 5px;
+
+    text-shadow:
+        0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.btn-description {
+    position: relative;
+
+    font-size: 0.9rem;
+
+    color: #b9e9eb;
+
+    line-height: 1.4;
+}
+
+/* =========================
+   SUBSCRIPTION LOCK
+========================= */
+
+.sub-locker {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0, 255, 255, 0.1),
+            rgba(0, 30, 35, 0.95)
+        );
+
+    border: 2px solid var(--cyan);
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 0 25px rgba(0, 255, 255, 0.25),
+        inset 0 0 25px rgba(0, 255, 255, 0.05);
+
+    max-width: 440px;
+    width: 100%;
+
+    margin-bottom: 40px;
+
+    display: none;
+}
+
+.sub-locker h3 {
+    color: white;
+
+    margin-top: 0;
+
+    font-size: 1.6rem;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 10px var(--cyan),
+        0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.sub-locker p {
+    color: #b9e9eb;
+
+    font-size: 0.95rem;
+
+    line-height: 1.5;
+
+    margin-bottom: 25px;
+}
+
+/* =========================
+   CYAN SUB BUTTONS
+========================= */
+
+.locker-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #00ffff,
+            #00bfc8
+        );
+
+    color: #001316;
+
+    border: none;
+
+    padding: 14px 20px;
+
+    font-weight: 900;
+
+    font-size: 1rem;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    display: block;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+
+    margin-bottom: 15px;
+
+    width: 100%;
+
+    box-shadow:
+        0 5px 20px rgba(0, 255, 255, 0.25);
+}
+
+.locker-btn:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.1);
+
+    box-shadow:
+        0 7px 30px rgba(0, 255, 255, 0.5);
+}
+
+.locker-btn.verify-btn {
+    background: rgba(0, 255, 255, 0.08);
+
+    border: 1px solid rgba(0, 255, 255, 0.4);
+
+    color: var(--cyan);
+
+    box-shadow: none;
+}
+
+.locker-btn.verify-btn:hover {
+    background: rgba(0, 255, 255, 0.15);
+
+    border-color: var(--cyan);
+}
+
+.error-msg {
+    color: #ff5555;
+
+    font-size: 0.85rem;
+
+    margin-top: -5px;
+    margin-bottom: 15px;
+
+    display: none;
+
+    font-weight: 600;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 30px 15px;
+    }
+
+    .profile-pic {
+        width: 125px;
+        height: 125px;
+    }
+
+    .typewriter-text {
+        font-size: 2rem;
+    }
+
+    .enter-text {
+        font-size: 1.35rem;
+        text-align: center;
+    }
+
+    .links-container {
+        max-width: 100%;
+    }
+
+    .sub-locker {
+        padding: 24px;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <canvas id="lightning-canvas"></canvas>
-    <audio id="bg-audio" crossorigin="anonymous"></audio>
+<canvas id="lightning-canvas"></canvas>
 
-    <div class="enter-overlay" id="overlay-screen">
-        <div class="enter-text" id="enter-status">Click to Enter...</div>
+<audio id="bg-audio" crossorigin="anonymous"></audio>
+
+<!-- ENTER SCREEN -->
+<div class="enter-overlay" id="overlay-screen">
+    <div class="enter-text" id="enter-status">
+        Click to Enter...
+    </div>
+</div>
+
+<!-- MAIN SITE -->
+<div class="main-content" id="site-content">
+
+    <img
+        src="151.png"
+        alt="BR Profile Picture"
+        class="profile-pic"
+    >
+
+    <div class="title-container">
+        <div class="typewriter-text" id="typewriter"></div>
     </div>
 
-    <div class="main-content" id="site-content">
-        <img src="151.png" alt="StripesVR Profile Picture" class="profile-pic">
+    <!-- SUBSCRIPTION LOCK -->
+    <div class="sub-locker" id="subscription-modal">
 
-        <div class="title-container">
-            <div class="typewriter-text" id="typewriter"></div>
+        <h3>SUBSCRIBE REQUIRED</h3>
+
+        <p>
+            Please subscribe to my YouTube channel before
+            continuing to BRModding.
+        </p>
+
+        <a
+            href="https://www.youtube.com/@BRTeamYT?sub_confirmation=1"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="locker-btn"
+            id="subscribe-action-btn"
+        >
+            1. Subscribe on YouTube
+        </a>
+
+        <div class="error-msg" id="locker-error">
+            Please complete step 1 before checking status!
         </div>
 
-        <div class="sub-locker" id="subscription-modal">
-            <h3>ATTENTION</h3>
-            <p>Please Subscribe to my channel before continuing to my site.</p>
-            <a href="youtube.com/@BRTeamYT?sub_confirmation=1" target="_blank" class="locker-btn" id="subscribe-action-btn">1. Subscribe on YouTube</a>
-            <div class="error-msg" id="locker-error">Please complete step 1 before checking status!</div>
-            <button class="locker-btn verify-btn" id="verify-action-btn">2. Check Verification</button>
-        </div>
+        <button
+            class="locker-btn verify-btn"
+            id="verify-action-btn"
+        >
+            2. Check Verification
+        </button>
 
-        <div class="links-container" id="menu-links">
-            <a href="frida.html" class="card-link">
-                <span class="btn-name">Frida Tools</span>
-                <span class="btn-description">Needed For Every Mod In Here!</span>
-            </a>
-
-            <a href="https://discord.gg/XnFxrkuKM5" class="card-link">
-                <span class="btn-name">EIC Modding</span>
-                <span class="btn-description">standalone no PC animal company mod</span>
-            </a>
-
-            <a href="stripesadb.html" class="card-link">
-                <span class="btn-name">StripesADB</span>
-                <span class="btn-description">All The Downloads Needed For StripesADB</span>
-            </a>
-
-            <a href="standy.html" class="card-link">
-                <span class="btn-name">Standy Mod</span>
-                <span class="btn-description">Download N Stuff For Standy Mod Works For Every Game!</span>
-            </a>
-
-            <a href="iistupid.html" class="card-link">
-                <span class="btn-name">II Stupid Menu Standalone</span>
-                <span class="btn-description">Coming Soon</span>
-            </a>
-
-            <a href="https://discord.gg/spm" class="card-link">
-                <span class="btn-name">SPM Gorilla Tag Mods</span>
-                <span class="btn-description">Mod Menu No PC</span>
-            </a>
-
-            <a href="https://github.com/stripesvr/StripesHub/releases/tag/mods" class="card-link">
-                <span class="btn-name">Fangame Modder</span>
-                <span class="btn-description">ye, mods fangames</span>
-            </a>
-
-            <a href="delta.html" class="card-link">
-                <span class="btn-name">Delta</span>
-                <span class="btn-description">delta new adb</span>
-            </a>
-
-            <a href="moonlitv2.html" class="card-link">
-                <span class="btn-name">MoonlitV2</span>
-                <span class="btn-description">The BEST Moonlit</span>
-            </a>
-        </div>
     </div>
 
-    <script>
-        // ==========================================
-        // CONFIGURATION OPTIONS
-        // ==========================================
-        // Change song volume here (0.0 = Mute, 0.5 = 50% volume, 1.0 = 100% full volume)
-        const DEFAULT_VOLUME = 0.05; 
-        // ==========================================
+    <!-- MOD LINKS -->
+    <div class="links-container" id="menu-links">
 
-        const textArray = ["BRModding"];
-        let textIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const typeSpeed = 150;  
-        const eraseSpeed = 100; 
-        const delayBetween = 2500; 
-        const typewriterElement = document.getElementById("typewriter");
+        <a href="frida.html" class="card-link">
+            <span class="btn-name">Frida Tools</span>
+            <span class="btn-description">
+                Needed For Every Mod In Here!
+            </span>
+        </a>
 
-        function type() {
-            const currentText = textArray[textIndex];
-            if (isDeleting) {
-                typewriterElement.textContent = currentText.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                typewriterElement.textContent = currentText.substring(0, charIndex + 1);
-                charIndex++;
-            }
+        <a href="https://discord.gg/XnFxrkuKM5"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="card-link">
 
-            let nextActionSpeed = isDeleting ? eraseSpeed : typeSpeed;
+            <span class="btn-name">EIC Modding</span>
 
-            if (!isDeleting && charIndex === currentText.length) {
-                nextActionSpeed = delayBetween; 
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                nextActionSpeed = 500; 
-            }
-            setTimeout(type, nextActionSpeed);
+            <span class="btn-description">
+                Standalone no PC Animal Company mod
+            </span>
+        </a>
+
+        <a href="stripesadb.html" class="card-link">
+            <span class="btn-name">StripesADB</span>
+            <span class="btn-description">
+                All The Downloads Needed For StripesADB
+            </span>
+        </a>
+
+        <a href="standy.html" class="card-link">
+            <span class="btn-name">Standy Mod</span>
+            <span class="btn-description">
+                Download N Stuff For Standy Mod — Works For Every Game!
+            </span>
+        </a>
+
+        <a href="iistupid.html" class="card-link">
+            <span class="btn-name">II Stupid Menu Standalone</span>
+            <span class="btn-description">
+                Coming Soon
+            </span>
+        </a>
+
+        <a href="https://discord.gg/spm"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="card-link">
+
+            <span class="btn-name">SPM Gorilla Tag Mods</span>
+
+            <span class="btn-description">
+                Mod Menu No PC
+            </span>
+        </a>
+
+        <a href="https://github.com/stripesvr/StripesHub/releases/tag/mods"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="card-link">
+
+            <span class="btn-name">Fangame Modder</span>
+
+            <span class="btn-description">
+                Mods for fangames
+            </span>
+        </a>
+
+        <a href="delta.html" class="card-link">
+            <span class="btn-name">Delta</span>
+            <span class="btn-description">
+                Delta New ADB
+            </span>
+        </a>
+
+        <a href="moonlitv2.html" class="card-link">
+            <span class="btn-name">MoonlitV2</span>
+            <span class="btn-description">
+                The BEST Moonlit
+            </span>
+        </a>
+
+    </div>
+</div>
+
+<script>
+
+/* =========================
+   CONFIG
+========================= */
+
+const DEFAULT_VOLUME = 0.05;
+const SONG_URL = "song.mp3";
+
+/* =========================
+   TYPEWRITER
+========================= */
+
+const textArray = ["BRModding"];
+
+let textIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+
+const typeSpeed = 150;
+const eraseSpeed = 100;
+const delayBetween = 2500;
+
+const typewriterElement =
+    document.getElementById("typewriter");
+
+function type() {
+
+    const currentText = textArray[textIndex];
+
+    if (isDeleting) {
+
+        typewriterElement.textContent =
+            currentText.substring(0, charIndex - 1);
+
+        charIndex--;
+
+    } else {
+
+        typewriterElement.textContent =
+            currentText.substring(0, charIndex + 1);
+
+        charIndex++;
+    }
+
+    let speed =
+        isDeleting ? eraseSpeed : typeSpeed;
+
+    if (!isDeleting &&
+        charIndex === currentText.length) {
+
+        speed = delayBetween;
+        isDeleting = true;
+
+    } else if (
+        isDeleting &&
+        charIndex === 0
+    ) {
+
+        isDeleting = false;
+        speed = 500;
+    }
+
+    setTimeout(type, speed);
+}
+
+/* =========================
+   CANVAS
+========================= */
+
+const canvas =
+    document.getElementById("lightning-canvas");
+
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+let lightningOpacity = 0;
+let activeStrikes = [];
+
+/* =========================
+   LIGHTNING
+========================= */
+
+function createLightningPath(
+    startX,
+    startY,
+    endY,
+    segments
+) {
+
+    const path = [
+        {
+            x: startX,
+            y: startY
         }
+    ];
 
-        const canvas = document.getElementById('lightning-canvas');
-        const ctx = canvas.getContext('2d');
+    let currentX = startX;
+    let currentY = startY;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+    const segmentHeight =
+        (endY - startY) / segments;
 
-        let lightningOpacity = 0;
-        let activeStrikes = [];
+    for (
+        let i = 0;
+        i < segments;
+        i++
+    ) {
 
-        function createLightningPath(startX, startY, endY, segments) {
-            let path = [{x: startX, y: startY}];
-            let currentX = startX;
-            let currentY = startY;
-            let segmentHeight = (endY - startY) / segments;
+        currentY += segmentHeight;
 
-            for (let i = 0; i < segments; i++) {
-                currentY += segmentHeight;
-                let deviation = (Math.random() - 0.5) * 110; 
-                currentX += deviation;
-                path.push({x: currentX, y: currentY});
-            }
-            return path;
-        }
+        currentX +=
+            (Math.random() - 0.5) * 110;
 
-        function drawLightning(path, width, glowSize, color) {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = width;
-            ctx.shadowBlur = glowSize;
-            ctx.shadowColor = '#ff0000';
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+        path.push({
+            x: currentX,
+            y: currentY
+        });
+    }
 
-            ctx.beginPath();
-            ctx.moveTo(path[0].x, path[0].y);
-            for (let i = 1; i < path.length; i++) {
-                ctx.lineTo(path[i].x, path[i].y);
-            }
-            ctx.stroke();
-        }
+    return path;
+}
 
-        function triggerLightningStrike() {
-            activeStrikes = [];
-            let totalStrikes = Math.floor(Math.random() * 3) + 2; 
+function drawLightning(
+    path,
+    width,
+    glowSize,
+    color
+) {
 
-            for (let i = 0; i < totalStrikes; i++) {
-                let startX = Math.random() * canvas.width;
-                let path = createLightningPath(startX, 0, canvas.height, 10);
-                activeStrikes.push(path);
-            }
-            lightningOpacity = 1.0; 
-        }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
 
-        let audioCtx, analyser, dataArray, sourceNode;
-        let isPlaying = false;
-        const audio = document.getElementById('bg-audio');
-        
-        const songUrl = 'song.mp3';
+    ctx.shadowBlur = glowSize;
+    ctx.shadowColor = "#ff2222";
 
-        let bassHistory = [];
-        const historySize = 20; 
-        let lastStrikeTime = 0;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
 
-        function setupAndPlayAudio() {
-            try {
-                audio.src = songUrl;
-                audio.loop = true;
-                audio.crossOrigin = "anonymous";
-                audio.volume = DEFAULT_VOLUME; // Set background audio volume here
+    ctx.beginPath();
 
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContextClass();
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64; 
-                
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
+    ctx.moveTo(
+        path[0].x,
+        path[0].y
+    );
 
-                sourceNode = audioCtx.createMediaElementSource(audio);
-                sourceNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
+    for (
+        let i = 1;
+        i < path.length;
+        i++
+    ) {
 
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+        ctx.lineTo(
+            path[i].x,
+            path[i].y
+        );
+    }
 
-                audio.currentTime = 7;
+    ctx.stroke();
+}
 
-                let playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        isPlaying = true;
-                        animateDance();
-                    }).catch(err => {
-                        console.error("Playback failed directly:", err);
-                        audio.src = 'song.mp3';
-                        audio.volume = DEFAULT_VOLUME;
-                        audio.play().then(() => { isPlaying = true; animateDance(); });
-                    });
-                }
+function triggerLightningStrike() {
 
-            } catch (err) {
-                console.error("Audio initialization glitch:", err);
-            }
-        }
+    activeStrikes = [];
 
-        function animateDance() {
-            requestAnimationFrame(animateDance);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const totalStrikes =
+        Math.floor(Math.random() * 3) + 2;
 
-            if (!isPlaying) return;
+    for (
+        let i = 0;
+        i < totalStrikes;
+        i++
+    ) {
 
-            analyser.getByteFrequencyData(dataArray);
-            let bassValue = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
+        const startX =
+            Math.random() * canvas.width;
 
-            let sum = 0;
-            for (let i = 0; i < bassHistory.length; i++) {
-                sum += bassHistory[i];
-            }
-            let bassAverage = bassHistory.length > 0 ? sum / bassHistory.length : 120;
+        const path =
+            createLightningPath(
+                startX,
+                0,
+                canvas.height,
+                10
+            );
 
-            bassHistory.push(bassValue);
-            if (bassHistory.length > historySize) {
-                bassHistory.shift();
-            }
+        activeStrikes.push(path);
+    }
 
-            let currentTime = Date.now();
-            let timeSinceLastStrike = currentTime - lastStrikeTime;
+    lightningOpacity = 1;
+}
 
-            if ((bassValue > bassAverage * 1.04 && timeSinceLastStrike > 180) || (bassValue >= 240 && timeSinceLastStrike > 320)) {
-                triggerLightningStrike();
-                lastStrikeTime = currentTime;
-            }
+/* =========================
+   AUDIO
+========================= */
 
-            if (lightningOpacity > 0) {
-                ctx.globalAlpha = lightningOpacity;
-                activeStrikes.forEach(path => {
-                    drawLightning(path, 5, 35, '#ff3333');
-                    drawLightning(path, 1.5, 5, '#ffffff');
-                });
-                lightningOpacity *= 0.75; 
-                if (lightningOpacity < 0.01) lightningOpacity = 0;
-            }
+let audioCtx;
+let analyser;
+let dataArray;
+let sourceNode;
 
-            let normalized = bassValue / 255;
-            let glowIntensity = normalized * 50; 
-            let redShift = Math.floor(13 + (lightningOpacity * 35)); 
-            let colorPulse = `rgb(${redShift}, 13, 17)`;
+let isPlaying = false;
 
-            document.documentElement.style.setProperty('--beat-glow', `${glowIntensity}px`);
-            document.documentElement.style.setProperty('--beat-color-pulse', colorPulse);
-        }
+const audio =
+    document.getElementById("bg-audio");
 
-        let clickedSubscribe = false;
+let bassHistory = [];
 
-        function checkLayoutLock() {
-            const container = document.getElementById('menu-links');
-            const modal = document.getElementById('subscription-modal');
-            const subBtn = document.getElementById('subscribe-action-btn');
-            const verifyBtn = document.getElementById('verify-action-btn');
-            const errorMsg = document.getElementById('locker-error');
+const historySize = 20;
 
-            const hasVisitedBefore = localStorage.getItem('stripes_visited');
+let lastStrikeTime = 0;
 
-            if (!hasVisitedBefore) {
-                container.style.display = 'none';
-                modal.style.display = 'block';
+function setupAndPlayAudio() {
 
-                subBtn.addEventListener('click', () => {
-                    clickedSubscribe = true;
-                    errorMsg.style.display = 'none';
-                });
+    try {
 
-                verifyBtn.addEventListener('click', () => {
-                    if (!clickedSubscribe) {
-                        errorMsg.style.display = 'block';
-                    } else {
-                        localStorage.setItem('stripes_visited', 'true');
-                        modal.style.display = 'none';
-                        container.style.display = 'flex';
-                    }
-                });
-            } else {
-                modal.style.display = 'none';
-                container.style.display = 'flex';
-            }
-        }
+        audio.src = SONG_URL;
 
-        const overlay = document.getElementById('overlay-screen');
-        const siteContent = document.getElementById('site-content');
-        const enterStatus = document.getElementById('enter-status');
+        audio.loop = true;
+        audio.volume = DEFAULT_VOLUME;
 
-        overlay.addEventListener('click', () => {
-            enterStatus.textContent = "Loading Track...";
-            overlay.classList.add('hidden');
-            siteContent.classList.add('active');
+        const AudioContextClass =
+            window.AudioContext ||
+            window.webkitAudioContext;
 
-            setupAndPlayAudio();
-            checkLayoutLock();
+        audioCtx =
+            new AudioContextClass();
+
+        analyser =
+            audioCtx.createAnalyser();
+
+        analyser.fftSize = 64;
+
+        dataArray =
+            new Uint8Array(
+                analyser.frequencyBinCount
+            );
+
+        sourceNode =
+            audioCtx.createMediaElementSource(
+                audio
+            );
+
+        sourceNode.connect(analyser);
+
+        analyser.connect(
+            audioCtx.destination
+        );
+
+        audioCtx.resume();
+
+        audio.currentTime = 7;
+
+        audio.play()
+            .then(() => {
+
+                isPlaying = true;
+
+                animateDance();
+
+            })
+            .catch(error => {
+
+                console.error(
+                    "Audio playback failed:",
+                    error
+                );
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Audio initialization failed:",
+            error
+        );
+    }
+}
+
+/* =========================
+   AUDIO VISUALIZER
+========================= */
+
+function animateDance() {
+
+    requestAnimationFrame(
+        animateDance
+    );
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    if (!isPlaying) return;
+
+    analyser.getByteFrequencyData(
+        dataArray
+    );
+
+    const bassValue =
+        (
+            dataArray[0] +
+            dataArray[1] +
+            dataArray[2] +
+            dataArray[3]
+        ) / 4;
+
+    let sum = 0;
+
+    for (
+        let i = 0;
+        i < bassHistory.length;
+        i++
+    ) {
+
+        sum += bassHistory[i];
+    }
+
+    const bassAverage =
+        bassHistory.length
+            ? sum / bassHistory.length
+            : 120;
+
+    bassHistory.push(bassValue);
+
+    if (
+        bassHistory.length >
+        historySize
+    ) {
+
+        bassHistory.shift();
+    }
+
+    const currentTime =
+        Date.now();
+
+    const timeSinceLastStrike =
+        currentTime - lastStrikeTime;
+
+    if (
+        (
+            bassValue >
+            bassAverage * 1.04 &&
+            timeSinceLastStrike > 180
+        )
+        ||
+        (
+            bassValue >= 240 &&
+            timeSinceLastStrike > 320
+        )
+    ) {
+
+        triggerLightningStrike();
+
+        lastStrikeTime =
+            currentTime;
+    }
+
+    if (lightningOpacity > 0) {
+
+        ctx.globalAlpha =
+            lightningOpacity;
+
+        activeStrikes.forEach(path => {
+
+            drawLightning(
+                path,
+                5,
+                35,
+                "#ff2222"
+            );
+
+            drawLightning(
+                path,
+                1.5,
+                5,
+                "#ffffff"
+            );
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(type, 500);
-        });
-    </script>
+        lightningOpacity *= 0.75;
+
+        if (
+            lightningOpacity < 0.01
+        ) {
+
+            lightningOpacity = 0;
+        }
+    }
+
+    ctx.globalAlpha = 1;
+
+    const normalized =
+        bassValue / 255;
+
+    const glowIntensity =
+        normalized * 50;
+
+    document.documentElement.style
+        .setProperty(
+            "--glow",
+            `${glowIntensity}px`
+        );
+}
+
+/* =========================
+   SUBSCRIPTION LOCK
+========================= */
+
+let clickedSubscribe = false;
+
+function checkLayoutLock() {
+
+    const container =
+        document.getElementById(
+            "menu-links"
+        );
+
+    const modal =
+        document.getElementById(
+            "subscription-modal"
+        );
+
+    const subBtn =
+        document.getElementById(
+            "subscribe-action-btn"
+        );
+
+    const verifyBtn =
+        document.getElementById(
+            "verify-action-btn"
+        );
+
+    const errorMsg =
+        document.getElementById(
+            "locker-error"
+        );
+
+    const hasVisitedBefore =
+        localStorage.getItem(
+            "brmodding_visited"
+        );
+
+    if (!hasVisitedBefore) {
+
+        container.style.display =
+            "none";
+
+        modal.style.display =
+            "block";
+
+        subBtn.onclick = () => {
+
+            clickedSubscribe = true;
+
+            errorMsg.style.display =
+                "none";
+        };
+
+        verifyBtn.onclick = () => {
+
+            if (!clickedSubscribe) {
+
+                errorMsg.style.display =
+                    "block";
+
+                return;
+            }
+
+            localStorage.setItem(
+                "brmodding_visited",
+                "true"
+            );
+
+            modal.style.display =
+                "none";
+
+            container.style.display =
+                "flex";
+        };
+
+    } else {
+
+        modal.style.display =
+            "none";
+
+        container.style.display =
+            "flex";
+    }
+}
+
+/* =========================
+   ENTER SCREEN
+========================= */
+
+const overlay =
+    document.getElementById(
+        "overlay-screen"
+    );
+
+const siteContent =
+    document.getElementById(
+        "site-content"
+    );
+
+const enterStatus =
+    document.getElementById(
+        "enter-status"
+    );
+
+overlay.addEventListener(
+    "click",
+    () => {
+
+        enterStatus.textContent =
+            "Loading Track...";
+
+        overlay.classList.add(
+            "hidden"
+        );
+
+        siteContent.classList.add(
+            "active"
+        );
+
+        setupAndPlayAudio();
+
+        checkLayoutLock();
+    }
+);
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        setTimeout(
+            type,
+            500
+        );
+    }
+);
+
+</script>
+
 </body>
 </html>
